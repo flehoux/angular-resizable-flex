@@ -15,7 +15,7 @@ Attribute directive built to resize flex elements
 
 ## Contributing
 
-If you want to improve the nucleotides library, add functionality or improve the docs please feel free to submit a PR. Ensure you run and adapt tests if you do so.
+If you want to improve the angular-resizable-flex library, add functionality or improve the docs please feel free to submit a PR. Ensure you run and adapt tests if you do so.
 
 ## License
 
