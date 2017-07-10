@@ -5,7 +5,7 @@
   "main": "angular-resizable-flex.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/flehoux/angular-resizable-flex.js.git"
+    "url": "git+https://github.com/flehoux/angular-resizable-flex.git"
   },
   "keywords": [
     "javascript",
@@ -17,7 +17,7 @@
   "bugs": {
     "url": "https://github.com/flehoux/angular-resizable-flex/issues"
   },
-  "homepage": "https://github.com/flehoux/angular-resizable-flex.js#readme",
+  "homepage": "https://github.com/flehoux/angular-resizable-flex#readme",
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-coffee": "^2.3.4",
