@@ -26,16 +26,16 @@
       if e.touches? then e.touches[0][attr] else e[attr]
 
     bindListeners = ->
-      document.addEventListener 'mouseup', onDragDrop, false
-      document.addEventListener 'mousemove', onDragging, false
-      document.addEventListener 'touchend', onDragDrop, false
-      document.addEventListener 'touchmove', onDragging, false
+      document.addEventListener 'mouseup', onDragDrop
+      document.addEventListener 'mousemove', onDragging
+      document.addEventListener 'touchend', onDragDrop, { passive: true }
+      document.addEventListener 'touchmove', onDragging, { passive: true }
 
     unbindListeners = ->
-      document.removeEventListener 'mouseup', onDragDrop, false
-      document.removeEventListener 'mousemove', onDragging, false
-      document.removeEventListener 'touchend', onDragDrop, false
-      document.removeEventListener 'touchmove', onDragging, false
+      document.removeEventListener 'mouseup', onDragDrop
+      document.removeEventListener 'mousemove', onDragging
+      document.removeEventListener 'touchend', onDragDrop
+      document.removeEventListener 'touchmove', onDragging
 
     # Event handlers
     onDragStart = (e) ->
@@ -69,7 +69,12 @@
       element[0].appendChild data.handle
 
       # Register start events
-      data.handle.addEventListener 'mousedown', onDragStart, false
-      data.handle.addEventListener 'touchstart', onDragStart, false
+      data.handle.addEventListener 'mousedown', onDragStart
+      data.handle.addEventListener 'touchstart', onDragStart, { passive: true }
 
     instantiateHandle()
+
+    scope.$on '$destroy', ->
+      unbindListeners()
+      data.handle.removeEventListener 'mousedown', onDragStart
+      data.handle.removeEventListener 'touchstart', onDragStart
