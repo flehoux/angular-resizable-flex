@@ -1,6 +1,6 @@
 # angular-resizable-flex
 
-Attribute directive built to resize flex elements
+Attribute directive built to resize flex elements. Should be compatible with most browsers and IE 11+.
 
 ---
 

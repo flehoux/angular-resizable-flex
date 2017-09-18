@@ -7,7 +7,7 @@
     rfName: '@'
     rfDirection: '@'
     rfSize: '='
-    rfHandle: '@'
+    rfHandle: '='
     rfDisabled: '='
     rfInitCb: '&'
     rfCallback: '&'
@@ -47,6 +47,8 @@
       data.initialHeight = parseInt data.style.getPropertyValue 'height'
       data.initialPos = getElementPos e
 
+      data.handle.classList.toggle 'rf-dragging', true
+
       if e.stopPropagation then e.stopPropagation()
       if e.preventDefault then e.preventDefault()
 
@@ -60,6 +62,7 @@
 
     onDragDrop = ->
       unbindListeners()
+      data.handle.classList.toggle 'rf-dragging', false
       if scope.rfCallback then scope.rfCallback rfObj: { name: scope.rfName, size: getFlexBasis() }
 
     instantiateHandle = ->
