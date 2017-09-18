@@ -9,6 +9,7 @@
     rfSize: '='
     rfHandle: '@'
     rfDisabled: '='
+    rfInitCb: '&'
     rfCallback: '&'
 
   link: (scope, element) ->
@@ -72,7 +73,11 @@
       data.handle.addEventListener 'mousedown', onDragStart
       data.handle.addEventListener 'touchstart', onDragStart, { passive: true }
 
-    instantiateHandle()
+    init = ->
+      if scope.rfInitCb then setFlexBasis scope.rfInitCb rfObj: { name: scope.rfName }
+      instantiateHandle()  
+
+    init()
 
     scope.$on '$destroy', ->
       unbindListeners()
