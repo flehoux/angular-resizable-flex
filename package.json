@@ -1,6 +1,6 @@
 {
   "name": "angular-resizable-flex",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Attribute directive built to resize flex elements",
   "main": "angular-resizable-flex.js",
   "repository": {

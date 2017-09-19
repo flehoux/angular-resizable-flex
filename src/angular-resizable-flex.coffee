@@ -10,7 +10,8 @@
     rfHandle: '='
     rfDisabled: '='
     rfInitCb: '&'
-    rfCallback: '&'
+    rfDragCb: '&'
+    rfDropCb: '&'
 
   link: (scope, element) ->
     data =
@@ -19,7 +20,7 @@
     # Update FlexBasis with dynamic size
     scope.$watch 'rfSize', (size) -> if size? then setFlexBasis size
 
-    getFlexBasis = -> element[0].style['flexBasis'].replace 'px', ''
+    getFlexBasis = -> parseInt(element[0].style['flexBasis'].replace 'px', '')
     setFlexBasis = (size) -> element[0].style['flexBasis'] = size + 'px'
 
     getElementPos = (e) ->
@@ -27,10 +28,10 @@
       if e.touches? then e.touches[0][attr] else e[attr]
 
     bindListeners = ->
-      document.addEventListener 'mouseup', onDragDrop
-      document.addEventListener 'mousemove', onDragging
-      document.addEventListener 'touchend', onDragDrop, { passive: true }
-      document.addEventListener 'touchmove', onDragging, { passive: true }
+      document.addEventListener 'mouseup', onDragDrop, if passiveSupported then { passive: true } else false
+      document.addEventListener 'mousemove', onDragging, if passiveSupported then { passive: true } else false
+      document.addEventListener 'touchend', onDragDrop, if passiveSupported then { passive: true } else false
+      document.addEventListener 'touchmove', onDragging, if passiveSupported then { passive: true } else false
 
     unbindListeners = ->
       document.removeEventListener 'mouseup', onDragDrop
@@ -47,23 +48,33 @@
       data.initialHeight = parseInt data.style.getPropertyValue 'height'
       data.initialPos = getElementPos e
 
-      data.handle.classList.toggle 'rf-dragging', true
-
-      if e.stopPropagation then e.stopPropagation()
-      if e.preventDefault then e.preventDefault()
+      data.handle.classList.add 'rf-dragging'
 
     onDragging = (e) ->
       offset = data.initialPos - getElementPos e
-      switch scope.rfDirection
-        when 'top'    then setFlexBasis data.initialHeight + offset
-        when 'bottom' then setFlexBasis data.initialHeight - offset
-        when 'right'  then setFlexBasis data.initialWidth - offset
-        when 'left'   then setFlexBasis data.initialWidth + offset
+      basis = switch scope.rfDirection
+        when 'top'    then data.initialHeight + offset
+        when 'bottom' then data.initialHeight - offset
+        when 'right'  then data.initialWidth - offset
+        when 'left'   then data.initialWidth + offset
+
+      setFlexBasis basis
+      if scope.rfDragCb then scope.rfDragCb rfObj: { name: scope.rfName, size: getFlexBasis(), element: element }
 
     onDragDrop = ->
       unbindListeners()
-      data.handle.classList.toggle 'rf-dragging', false
-      if scope.rfCallback then scope.rfCallback rfObj: { name: scope.rfName, size: getFlexBasis() }
+      data.handle.classList.remove 'rf-dragging'
+      if scope.rfDropCb then scope.rfDropCb rfObj: { name: scope.rfName, size: getFlexBasis(), element: element }
+
+    passiveSupported = false
+    passiveSupportCheck = ->
+      try
+        options = Object.defineProperty({}, "passive", {
+          get: () => passiveSupported = true;
+        });
+
+        window.addEventListener("test", null, options);
+      catch error
 
     instantiateHandle = ->
       # Create handle element
@@ -73,12 +84,13 @@
       element[0].appendChild data.handle
 
       # Register start events
-      data.handle.addEventListener 'mousedown', onDragStart
-      data.handle.addEventListener 'touchstart', onDragStart, { passive: true }
+      data.handle.addEventListener 'mousedown', onDragStart, if passiveSupported then { passive: true } else false
+      data.handle.addEventListener 'touchstart', onDragStart, if passiveSupported then { passive: true } else false
 
     init = ->
-      if scope.rfInitCb then setFlexBasis scope.rfInitCb rfObj: { name: scope.rfName }
-      instantiateHandle()  
+      if scope.rfInitCb then setFlexBasis scope.rfInitCb rfObj: { name: scope.rfName, element: element }
+      passiveSupportCheck()
+      instantiateHandle()
 
     init()
 

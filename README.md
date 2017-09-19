@@ -7,9 +7,9 @@ Attribute directive built to resize flex elements. Should be compatible with mos
 ## Quick overview
 
 ```html
-<div resizable-flex rf-name="column-1" rf-direction="left" rfCallback="callback(rfObj)"></div>
+<div resizable-flex rf-name="column-1" rf-direction="left" rf-drop-cb="callback(rfObj)"></div>
 <div resizable-flex rf-direction="left" rf-size="500"></div>
-<div resizable-flex rf-direction="left" rf-handle="<div></div"></div>
+<div resizable-flex rf-direction="left" rf-handle="'<div></div>'"></div>
 <div resizable-flex rf-direction="left" rf-disabled="true"></div>
 ```
 
