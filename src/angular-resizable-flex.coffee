@@ -27,10 +27,10 @@
       if e.touches? then e.touches[0][attr] else e[attr]
 
     bindListeners = ->
-      document.addEventListener 'mouseup', onDragDrop
-      document.addEventListener 'mousemove', onDragging
-      document.addEventListener 'touchend', onDragDrop, { passive: true }
-      document.addEventListener 'touchmove', onDragging, { passive: true }
+      document.addEventListener 'mouseup', onDragDrop, if passiveSupported then { passive: true } else false
+      document.addEventListener 'mousemove', onDragging, if passiveSupported then { passive: true } else false
+      document.addEventListener 'touchend', onDragDrop, if passiveSupported then { passive: true } else false
+      document.addEventListener 'touchmove', onDragging, if passiveSupported then { passive: true } else false
 
     unbindListeners = ->
       document.removeEventListener 'mouseup', onDragDrop
@@ -49,9 +49,6 @@
 
       data.handle.classList.add 'rf-dragging'
 
-      if e.stopPropagation then e.stopPropagation()
-      if e.preventDefault then e.preventDefault()
-
     onDragging = (e) ->
       offset = data.initialPos - getElementPos e
       switch scope.rfDirection
@@ -65,6 +62,16 @@
       data.handle.classList.remove 'rf-dragging'
       if scope.rfCallback then scope.rfCallback rfObj: { name: scope.rfName, size: getFlexBasis() }
 
+    passiveSupported = false
+    passiveSupportCheck = ->
+      try
+        options = Object.defineProperty({}, "passive", {
+          get: () => passiveSupported = true;
+        });
+
+        window.addEventListener("test", null, options);
+      catch error
+
     instantiateHandle = ->
       # Create handle element
       data.handle = document.createElement 'div'
@@ -73,12 +80,13 @@
       element[0].appendChild data.handle
 
       # Register start events
-      data.handle.addEventListener 'mousedown', onDragStart
-      data.handle.addEventListener 'touchstart', onDragStart, { passive: true }
+      data.handle.addEventListener 'mousedown', onDragStart, if passiveSupported then { passive: true } else false
+      data.handle.addEventListener 'touchstart', onDragStart, if passiveSupported then { passive: true } else false
 
     init = ->
       if scope.rfInitCb then setFlexBasis scope.rfInitCb rfObj: { name: scope.rfName }
-      instantiateHandle()  
+      passiveSupportCheck()
+      instantiateHandle()
 
     init()
 
