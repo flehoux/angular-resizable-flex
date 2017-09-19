@@ -10,7 +10,7 @@
     rfHandle: '='
     rfDisabled: '='
     rfInitCb: '&'
-    rfCallback: '&'
+    rfDropCb: '&'
 
   link: (scope, element) ->
     data =
@@ -60,7 +60,7 @@
     onDragDrop = ->
       unbindListeners()
       data.handle.classList.remove 'rf-dragging'
-      if scope.rfCallback then scope.rfCallback rfObj: { name: scope.rfName, size: getFlexBasis() }
+      if scope.rfDropCb then scope.rfDropCb rfObj: { name: scope.rfName, size: getFlexBasis() }
 
     passiveSupported = false
     passiveSupportCheck = ->
