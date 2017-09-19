@@ -10,6 +10,7 @@
     rfHandle: '='
     rfDisabled: '='
     rfInitCb: '&'
+    rfDragCb: '&'
     rfDropCb: '&'
 
   link: (scope, element) ->
@@ -19,7 +20,7 @@
     # Update FlexBasis with dynamic size
     scope.$watch 'rfSize', (size) -> if size? then setFlexBasis size
 
-    getFlexBasis = -> element[0].style['flexBasis'].replace 'px', ''
+    getFlexBasis = -> parseInt(element[0].style['flexBasis'].replace 'px', '')
     setFlexBasis = (size) -> element[0].style['flexBasis'] = size + 'px'
 
     getElementPos = (e) ->
@@ -51,16 +52,19 @@
 
     onDragging = (e) ->
       offset = data.initialPos - getElementPos e
-      switch scope.rfDirection
-        when 'top'    then setFlexBasis data.initialHeight + offset
-        when 'bottom' then setFlexBasis data.initialHeight - offset
-        when 'right'  then setFlexBasis data.initialWidth - offset
-        when 'left'   then setFlexBasis data.initialWidth + offset
+      basis = switch scope.rfDirection
+        when 'top'    then data.initialHeight + offset
+        when 'bottom' then data.initialHeight - offset
+        when 'right'  then data.initialWidth - offset
+        when 'left'   then data.initialWidth + offset
+
+      setFlexBasis basis
+      if scope.rfDragCb then scope.rfDragCb rfObj: { name: scope.rfName, size: getFlexBasis(), element: element }
 
     onDragDrop = ->
       unbindListeners()
       data.handle.classList.remove 'rf-dragging'
-      if scope.rfDropCb then scope.rfDropCb rfObj: { name: scope.rfName, size: getFlexBasis() }
+      if scope.rfDropCb then scope.rfDropCb rfObj: { name: scope.rfName, size: getFlexBasis(), element: element }
 
     passiveSupported = false
     passiveSupportCheck = ->
@@ -84,7 +88,7 @@
       data.handle.addEventListener 'touchstart', onDragStart, if passiveSupported then { passive: true } else false
 
     init = ->
-      if scope.rfInitCb then setFlexBasis scope.rfInitCb rfObj: { name: scope.rfName }
+      if scope.rfInitCb then setFlexBasis scope.rfInitCb rfObj: { name: scope.rfName, element: element }
       passiveSupportCheck()
       instantiateHandle()
 
